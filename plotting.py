@@ -20,10 +20,8 @@ class obsticle:
         if shape == 'square':
             self.grid_points = []
             #Hard code for now
-            self.grid_points = [self.location,
-                                (self.location[0]+1, self.location[1]),
-                                (self.location[0], self.location[1]+1),
-                                (self.location[0]+1, self.location[1]+1),]
+            self.grid_points = [(5,5,6,6),(5,6,5,6)]
+
             #for i in range(self.size*self.size):
              #   self.location # these are the grid points that are taken up by the obsticle
 
@@ -48,7 +46,7 @@ plt.scatter(robot1.start[0], robot1.start[1], c='b')
 plt.scatter(robot2.start[0], robot2.start[1], c='b', label='Robot Start Points')
 plt.scatter(robot1.end[0],robot1.end[1], c='r')
 plt.scatter(robot2.end[0],robot2.end[1], c='r', label='Robot End Points')
-#plt.plot([obsticle1.grid_points])
+plt.scatter(obsticle1.grid_points[0], obsticle1.grid_points[1], c='k', label="Obstacle")
 plt.xlim(-1,11)
 plt.ylim(-1,11)
 plt.yticks(np.arange(0, 11, step=1))
