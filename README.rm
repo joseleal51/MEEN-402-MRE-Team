@@ -1,1 +1,0 @@
-This project consists of a python code that plans paths for multiple agents. This path planning is then implemented in a ROS/Gazebo simulaiton on Turtlebot2 robots.
