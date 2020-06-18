@@ -1,5 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+
+class grid_world:
+    """Load the world"""
+    def __init__(self, config_file):
+        self.df = pd.read_csv(config_file)
+        print "The World Config File is: ", self.df.head()
+
 
 class robot:
     """Robot objects"""
@@ -10,6 +18,7 @@ class robot:
 
     def update_position(self):
         pass
+
 
 class obsticle:
     """unmovable obsticles that the robots must avoid.. maybe can make dynamic obsticles??"""
@@ -25,6 +34,8 @@ class obsticle:
             #for i in range(self.size*self.size):
              #   self.location # these are the grid points that are taken up by the obsticle
 
+
+world = grid_world('environment1.csv')
 
 # temporarily hard code grid world size = 10 by 10 "squares"
 grid_size = np.array([10,10])
