@@ -35,7 +35,7 @@ class obsticle:
              #   self.location # these are the grid points that are taken up by the obsticle
 
 
-world = grid_world('environment1.csv')
+#world = grid_world('environment1.csv')
 
 # temporarily hard code grid world size = 10 by 10 "squares"
 grid_size = np.array([10,10])
