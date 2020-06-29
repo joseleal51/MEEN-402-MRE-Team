@@ -108,10 +108,12 @@ if __name__ == "__main__":
     result, cost = AStarSearch.solve(robot_start, robot_end, graph)
     print ("route", result)
     print ("cost", cost)
-    plt.plot([v[0] for v in result], [v[1] for v in result])
+    plt.plot([x[0] for x in result], [x[1] for x in result])
     for barrier in graph.barriers:
-        print (type(v[0]))
-        plt.plot([v[0] for v in barrier], [v[1] for v in barrier])
+        print(barrier)
+        x = [v[0] for v in barrier]
+        y = [v[1] for v in barrier]
+        plt.plot(x, y)
     plt.xlim(-1, world_size[0]+1)
     plt.ylim(-1, world_size[1]+1)
     plt.grid()
