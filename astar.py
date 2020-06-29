@@ -9,7 +9,7 @@ class AStarGraph(object):
         self.x_size = world_size[0]
         self.y_size = world_size[1]
         self.barriers = barrier_points
-        # print("type: ", type(self.barriers))
+        print("type: ", type(self.barriers))
 
     def heuristic(self, start, goal):
         # Use Chebyshev distance heuristic if we can move one square either
@@ -99,12 +99,12 @@ class AStarSearch:
         raise RuntimeError("A* failed to find a solution")
 
 if __name__ == "__main__":
-    barrier_points=[(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
-                     (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)]
+    barrier_points=[[(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
+                     (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)]]
     #barrier_points = [(5, 6), (5, 5), (5, 4), (5,3)]
-    world_size = (7,7)
+    world_size = (10,10)
     graph = AStarGraph(world_size, barrier_points)
-    robot_start, robot_end = (0, 0), (7, 7)
+    robot_start, robot_end = (0, 0), (5, 10)
     result, cost = AStarSearch.solve(robot_start, robot_end, graph)
     print ("route", result)
     print ("cost", cost)
