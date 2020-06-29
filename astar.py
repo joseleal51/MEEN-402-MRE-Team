@@ -101,7 +101,7 @@ class AStarSearch:
 if __name__ == "__main__":
     barrier_points=[(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
                      (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)]
-    barrier_points = [(5, 6), (5, 5), (5, 4), (5,3)]
+    #barrier_points = [(5, 6), (5, 5), (5, 4), (5,3)]
     world_size = (7,7)
     graph = AStarGraph(world_size, barrier_points)
     robot_start, robot_end = (0, 0), (7, 7)
