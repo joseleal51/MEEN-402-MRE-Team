@@ -102,9 +102,9 @@ if __name__ == "__main__":
     barrier_points=[[(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
                      (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)]]
     #barrier_points = [(5, 6), (5, 5), (5, 4), (5,3)]
-    world_size = (10,10)
+    world_size = (10, 10)
     graph = AStarGraph(world_size, barrier_points)
-    robot_start, robot_end = (0, 0), (5, 10)
+    robot_start, robot_end = (0, 0), (8, 10)
     result, cost = AStarSearch.solve(robot_start, robot_end, graph)
     print ("route", result)
     print ("cost", cost)
@@ -114,6 +114,10 @@ if __name__ == "__main__":
         x = [v[0] for v in barrier]
         y = [v[1] for v in barrier]
         plt.plot(x, y)
+    plt.scatter(robot_start[0],robot_start[1],s=40,c='r')
+    plt.scatter(robot_end[0],robot_end[1],s=40,c='g')
+    plt.text(robot_start[0],robot_start[1],"Start")
+    plt.text(robot_end[0],robot_end[1],"End")
     plt.xlim(-1, world_size[0]+1)
     plt.ylim(-1, world_size[1]+1)
     plt.grid()
