@@ -34,7 +34,7 @@ class AStarGraph(object):
     def move_cost(self, a, b):
         for barrier in self.barriers:
             if b in barrier:
-                return 100  # Extremely high cost to enter barrier squares
+                return 50  # High cost to enter barrier squares
         return 1  # Normal movement cost
 
 
@@ -101,23 +101,36 @@ class AStarSearch:
 if __name__ == "__main__":
     barrier_points=[[(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
                      (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)]]
-    #barrier_points = [(5, 6), (5, 5), (5, 4), (5,3)]
+
     world_size = (10, 10)
     graph = AStarGraph(world_size, barrier_points)
-    robot_start, robot_end = (0, 0), (8, 10)
-    result, cost = AStarSearch.solve(robot_start, robot_end, graph)
-    print ("route", result)
-    print ("cost", cost)
-    plt.plot([x[0] for x in result], [x[1] for x in result])
+    robots_starts = [(0,0), (8, 10), (4,4)]
+    robots_ends = [(7,4), (1,1), (6,7)]
+    num_robots = len(robots_starts)
+
+    results = []
+    costs = []
+
+    for i in range(num_robots):
+        my_tuple = AStarSearch.solve(robots_starts[i], robots_ends[i], graph)
+        results.append(my_tuple[0])
+        costs.append(my_tuple[1])
+    #result, cost = AStarSearch.solve(robot_star, robot_end, graph)
+    print ("route", results)
+    print ("cost", costs)
+    for result in results:
+        plt.plot([x[0] for x in result], [x[1] for x in result])
     for barrier in graph.barriers:
         print(barrier)
         x = [v[0] for v in barrier]
         y = [v[1] for v in barrier]
         plt.plot(x, y)
-    plt.scatter(robot_start[0],robot_start[1],s=40,c='r')
-    plt.scatter(robot_end[0],robot_end[1],s=40,c='g')
-    plt.text(robot_start[0],robot_start[1],"Start")
-    plt.text(robot_end[0],robot_end[1],"End")
+
+    for i in range(num_robots):
+        plt.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c='r')
+        plt.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c='g')
+        plt.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
+        plt.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
     plt.xlim(-1, world_size[0]+1)
     plt.ylim(-1, world_size[1]+1)
     plt.grid()
