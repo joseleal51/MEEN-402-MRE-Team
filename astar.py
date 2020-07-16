@@ -1,5 +1,6 @@
 from __future__ import print_function
 import matplotlib.pyplot as plt
+from math import sqrt
 
 
 class AStarGraph(object):
@@ -9,7 +10,7 @@ class AStarGraph(object):
         self.x_size = world_size[0]
         self.y_size = world_size[1]
         self.barriers = barrier_points
-        print("type: ", type(self.barriers))
+        #print("type: ", type(self.barriers))
 
     def heuristic(self, start, goal):
         # Use Chebyshev distance heuristic if we can move one square either
@@ -18,25 +19,34 @@ class AStarGraph(object):
         D2 = 1
         dx = abs(start[0] - goal[0])
         dy = abs(start[1] - goal[1])
-        return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+        h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy) # reduces dx + dy - min(dx, dy)
+        #h = sqrt(dx*dx + dy*dy)
+        print('\nh:', h, ' start:', start, ' goal:', goal, '\n')
+        return h
 
     def get_vertex_neighbours(self, pos):
         n = []
-        # Moves allow link a chess king
+        # Moves allowed like a chess king
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]:
             x2 = pos[0] + dx
             y2 = pos[1] + dy
             if x2 < 0 or x2 > self.x_size or y2 < 0 or y2 > self.y_size:
                 continue
             n.append((x2, y2))
+            print('get_vertex_neighbours: (x2, y2)', (x2, y2))
         return n
 
     def move_cost(self, a, b):
         for barrier in self.barriers:
             if b in barrier:
                 return 50  # High cost to enter barrier squares
-        return 1  # Normal movement cost
+        # check if moving diagonal
+        if a[0] != b[0] and a[1] != b[1]: # then a and b are diagonal
+            print('Diagonal\ta: ',a, '\tb: ', b)
+            return 1.4142 # ~sqrt(2)
+        return 1  # up or down movement
 
+# F = G + H
 
 class AStarSearch:
     """Class of functions for A* search algorithm"""
@@ -48,6 +58,8 @@ class AStarSearch:
         G={}  # Actual movement cost to each position from the start position
         F={}  # Estimated movement cost of start to end going via this position
 
+        # *** each node has location - need to add heading to add a turning cost
+        
         # Initialize starting values
         G[start]=0
         F[start]=graph.heuristic(start, end)
@@ -95,17 +107,18 @@ class AStarSearch:
                 G[neighbour]=candidateG
                 H=graph.heuristic(neighbour, end)
                 F[neighbour]=G[neighbour] + H
+                print('F: ', F)
 
         raise RuntimeError("A* failed to find a solution")
 
 if __name__ == "__main__":
-    barrier_points=[[(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
+    barrier_points=[[(3,4),(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
                      (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)]]
 
     world_size = (10, 10)
     graph = AStarGraph(world_size, barrier_points)
-    robots_starts = [(0,0), (8, 10), (4,4)]
-    robots_ends = [(7,4), (1,1), (6,7)]
+    robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)]
+    robots_ends = [(8,4), (1,1), (7,3), (3,3), (2,2)]
     num_robots = len(robots_starts)
 
     results = []
@@ -116,15 +129,16 @@ if __name__ == "__main__":
         results.append(my_tuple[0])
         costs.append(my_tuple[1])
     #result, cost = AStarSearch.solve(robot_star, robot_end, graph)
-    print ("route", results)
-    print ("cost", costs)
+
+    for i in range(num_robots): print("\nroute", results[i], "\ncost", costs[i])
+
     for result in results:
         plt.plot([x[0] for x in result], [x[1] for x in result])
     for barrier in graph.barriers:
-        print(barrier)
+        print('\nBarrier: ', barrier)
         x = [v[0] for v in barrier]
         y = [v[1] for v in barrier]
-        plt.plot(x, y)
+        plt.plot(x, y, 'k')
 
     for i in range(num_robots):
         plt.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c='r')
@@ -133,5 +147,11 @@ if __name__ == "__main__":
         plt.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
     plt.xlim(-1, world_size[0]+1)
     plt.ylim(-1, world_size[1]+1)
+    plt.xticks(list(range(world_size[0]+1)))
+    plt.yticks(list(range(world_size[1]+1)))
+    #plt.title('G_diag:'+str())
     plt.grid()
-    plt.show()
+    plt.show()#block=False)
+
+
+# animate graph - make time := distance (need to define a min distance/time that robots can get to eachother (collison avoidance))
