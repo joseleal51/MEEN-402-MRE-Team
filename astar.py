@@ -111,14 +111,23 @@ class AStarSearch:
 
         raise RuntimeError("A* failed to find a solution")
 
+
+class simulation:
+    """ doc string"""
+    def __init__(self):
+        pass
+
+    def hello(self):
+        pass
+
 if __name__ == "__main__":
     barrier_points=[[(3,4),(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
                      (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)]]
 
     world_size = (10, 10)
     graph = AStarGraph(world_size, barrier_points)
-    robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)]
-    robots_ends = [(8,4), (1,1), (7,3), (3,3), (2,2)]
+    robots_starts = [(0,0)]#, (8, 10), (3,5), (9,9), (7,7)]
+    robots_ends = [(8,4)]#, (1,1), (7,3), (3,3), (2,2)]
     num_robots = len(robots_starts)
 
     results = []
