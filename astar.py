@@ -2,6 +2,8 @@ from __future__ import print_function
 import matplotlib.pyplot as plt
 from math import sqrt
 
+import matplotlib.animation as animation
+
 
 class AStarGraph(object):
     # Define a class board like grid with two barriers
@@ -21,7 +23,7 @@ class AStarGraph(object):
         dy = abs(start[1] - goal[1])
         h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy) # reduces dx + dy - min(dx, dy)
         #h = sqrt(dx*dx + dy*dy)
-        print('\nh:', h, ' start:', start, ' goal:', goal, '\n')
+        #print('\nh:', h, ' start:', start, ' goal:', goal, '\n')
         return h
 
     def get_vertex_neighbours(self, pos):
@@ -33,7 +35,7 @@ class AStarGraph(object):
             if x2 < 0 or x2 > self.x_size or y2 < 0 or y2 > self.y_size:
                 continue
             n.append((x2, y2))
-            print('get_vertex_neighbours: (x2, y2)', (x2, y2))
+            #print('get_vertex_neighbours: (x2, y2)', (x2, y2))
         return n
 
     def move_cost(self, a, b):
@@ -42,7 +44,7 @@ class AStarGraph(object):
                 return 50  # High cost to enter barrier squares
         # check if moving diagonal
         if a[0] != b[0] and a[1] != b[1]: # then a and b are diagonal
-            print('Diagonal\ta: ',a, '\tb: ', b)
+            #print('Diagonal\ta: ',a, '\tb: ', b)
             return 1.4142 # ~sqrt(2)
         return 1  # up or down movement
 
@@ -107,18 +109,64 @@ class AStarSearch:
                 G[neighbour]=candidateG
                 H=graph.heuristic(neighbour, end)
                 F[neighbour]=G[neighbour] + H
-                print('F: ', F)
+                #print('F: ', F)
 
         raise RuntimeError("A* failed to find a solution")
 
 
 class simulation:
     """ doc string"""
-    def __init__(self):
+    def __init__(self, routes):
+
+        #self.longest_route_len = max([len(x ) for x in routes.values()])
+        self.longest_route_len = max([len(x ) for x in routes])
+        self.time = range(self.longest_route_len)
+        self.num_robots = len(routes)
+
+        #print('yoyo', self.longest_route_len)
+
+        # Transpose paths to time
+        routes_time = [[(0,0)]*self.num_robots for t in self.time]
+        #print(routes_time)
+        for t in self.time:
+            for j in range(self.num_robots):
+                try:
+                    #routes_time[t][j] = routes.values()[j][t]
+                    routes_time[t][j] = routes[j][t]
+                except: pass
+        #print('test\n',routes_time)
+            
+
+        # Find collisons
+        for i, locations in enumerate(routes_time):
+            #print('locations: ', locations)
+            # return a list of one point of each robot in time
+            #print("yuh: ",[locations.count(i) for i in locations])
+            if max([locations.count(j) for j in locations]) > 1:
+                 print('COLLISION at t=', i)
+
+
+        #for path in routes.values():
+            #for way_point in path:
+                #print(way_point)
+
+        # Create robot "objects???" good idea to make another class???? Just hold info in a dictionary for now
+
+
+    def find_collisions(self):
         pass
 
-    def hello(self):
+    def make_plot(self):
         pass
+    
+    def animate(self, i):
+        data =     for i in range(num_robots):
+        plt.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c='r')
+        plt.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c='g')
+        plt.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
+        plt.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
+        https://towardsdatascience.com/how-to-create-animated-graphs-in-python-bb619cc2dec1
+
 
 if __name__ == "__main__":
     barrier_points=[[(3,4),(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
@@ -126,25 +174,28 @@ if __name__ == "__main__":
 
     world_size = (10, 10)
     graph = AStarGraph(world_size, barrier_points)
-    robots_starts = [(0,0)]#, (8, 10), (3,5), (9,9), (7,7)]
-    robots_ends = [(8,4)]#, (1,1), (7,3), (3,3), (2,2)]
+    robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)]
+    robots_ends = [(8,4), (1,1), (7,3), (3,3), (2,2)]
     num_robots = len(robots_starts)
 
-    results = []
+    results = []#{v:None for v in range(num_robots)}
     costs = []
 
     for i in range(num_robots):
         my_tuple = AStarSearch.solve(robots_starts[i], robots_ends[i], graph)
+        #results[i] = my_tuple[0]
         results.append(my_tuple[0])
         costs.append(my_tuple[1])
     #result, cost = AStarSearch.solve(robot_star, robot_end, graph)
 
-    for i in range(num_robots): print("\nroute", results[i], "\ncost", costs[i])
+    #for i in range(num_robots): print("\nroute "+str(i+1)+": ", results[i], "\ncost", costs[i])
+
+    sim = simulation(results)
 
     for result in results:
         plt.plot([x[0] for x in result], [x[1] for x in result])
     for barrier in graph.barriers:
-        print('\nBarrier: ', barrier)
+        #print('\nBarrier: ', barrier)
         x = [v[0] for v in barrier]
         y = [v[1] for v in barrier]
         plt.plot(x, y, 'k')
@@ -161,6 +212,20 @@ if __name__ == "__main__":
     #plt.title('G_diag:'+str())
     plt.grid()
     plt.show()#block=False)
+
+    
+    # animation?
+    Writer = animation.writers['ffmpeg']
+    writer = Writer(fps=1, metadata=dict(artist='Me'), bitrate=1800)
+
+    fig = plt.figure(figsize=(10,6))
+    plt.xlim(-1, world_size[0]+1)
+    plt.ylim(-1, world_size[1]+1)
+    plt.xticks(list(range(world_size[0]+1)))
+    plt.yticks(list(range(world_size[1]+1)))
+    plt.xlabel('X',fontsize=20)
+    plt.ylabel('Y',fontsize=20)
+    plt.title('Mult-Agent Path Planning - Simulation')
 
 
 # animate graph - make time := distance (need to define a min distance/time that robots can get to eachother (collison avoidance))
