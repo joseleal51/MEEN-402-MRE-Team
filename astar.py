@@ -6,7 +6,7 @@ import matplotlib.animation as animation
 
 
 class AStarGraph(object):
-    # Define a class board like grid with two barriers
+    # Define a class board like grid with barriers
 
     def __init__(self, world_size, barrier_points):
         self.x_size = world_size[0]
@@ -126,22 +126,24 @@ class simulation:
         #print('yoyo', self.longest_route_len)
 
         # Transpose paths to time
-        routes_time = [[(0,0)]*self.num_robots for t in self.time]
-        #print(routes_time)
+        self.routes_time = [[(0,0)]*self.num_robots for t in self.time]
+        #print(self.routes_time)
         for t in self.time:
             for j in range(self.num_robots):
                 try:
                     #routes_time[t][j] = routes.values()[j][t]
-                    routes_time[t][j] = routes[j][t]
-                except: pass
+                    self.routes_time[t][j] = routes[j][t]
+                except: # the route for a robot is shorter than the other ones
+                    print("exception handled")
+                    self.routes_time[t][j] = self.routes_time[t-1][j-1]
         #print('test\n',routes_time)
             
 
         # Find collisons
-        for i, locations in enumerate(routes_time):
+        for i, locations in enumerate(self.routes_time):
             #print('locations: ', locations)
             # return a list of one point of each robot in time
-            #print("yuh: ",[locations.count(i) for i in locations])
+            #print("test2: ",[locations.count(i) for i in locations])
             if max([locations.count(j) for j in locations]) > 1:
                  print('COLLISION at t=', i)
 
@@ -160,12 +162,21 @@ class simulation:
         pass
     
     def animate(self, i):
-        data =     for i in range(num_robots):
-        plt.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c='r')
-        plt.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c='g')
-        plt.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
-        plt.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
-        https://towardsdatascience.com/how-to-create-animated-graphs-in-python-bb619cc2dec1
+        ax1.clear()
+        data = self.routes_time[i]
+        print('data: ', data, '\ti: ', i)
+        #for i in range(num_robots):
+        robo1_data = data[i]
+        print('robo1 data: ', robo1_data)
+        ax1.scatter(robo1_data[0],robo1_data[1])
+        #p = plt.scatter(robo1_data[0],robo1_data[1])
+        #plt.setp(p)
+        #plt.show()
+        #plt.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c='r')
+        #plt.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c='g')
+        #plt.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
+        #plt.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
+            
 
 
 if __name__ == "__main__":
@@ -192,7 +203,7 @@ if __name__ == "__main__":
 
     sim = simulation(results)
 
-    for result in results:
+    """     for result in results:
         plt.plot([x[0] for x in result], [x[1] for x in result])
     for barrier in graph.barriers:
         #print('\nBarrier: ', barrier)
@@ -211,14 +222,42 @@ if __name__ == "__main__":
     plt.yticks(list(range(world_size[1]+1)))
     #plt.title('G_diag:'+str())
     plt.grid()
-    plt.show()#block=False)
+    plt.show()#block=False) """
 
     
     # animation?
-    Writer = animation.writers['ffmpeg']
-    writer = Writer(fps=1, metadata=dict(artist='Me'), bitrate=1800)
+    #Writer = animation.writers['pillow']#'ffmpeg']
+    #writer = Writer(fps=1, metadata=dict(artist='Mike Ashley'), bitrate=1800)
 
     fig = plt.figure(figsize=(10,6))
+    #ax = plt.axes(xlim=(-50, 50), ylim=(-50, 50)) 
+    ax1 = fig.add_subplot(1,1,1)
+    data = sim.routes_time
+    print('data: ', data, len(data))
+    colors = {0:'k', 1:'r', 2:'g', 3:'b', 4:'c', 5:'y', 6:'g'}
+
+ 
+    def animate(i):
+        ax1.clear()
+        for barrier in graph.barriers:
+        #print('\nBarrier: ', barrier)
+            x = [v[0] for v in barrier]
+            y = [v[1] for v in barrier]
+            ax1.plot(x, y, 'k')
+        points = data[i]
+        for j, robo in enumerate(points):
+            print('robo: ', robo, 'j: ', j)
+            ax1.scatter(robo[0], robo[1], c=colors[j])
+        ax1.grid()
+        #ax1.scatter(i,i,s=40,c='g')
+        ax1.set_xlim(-1, world_size[0]+1)
+        ax1.set_ylim(-1, world_size[1]+1)
+        ax1.set_xticks(list(range(world_size[0]+1)))
+        ax1.set_yticks(list(range(world_size[1]+1)))
+        ax1.set_xlabel('X',fontsize=20)
+        ax1.set_ylabel('Y',fontsize=20)
+        ax1.set_title('Mult-Agent Path Planning - Simulation')
+        ax1.grid() 
     plt.xlim(-1, world_size[0]+1)
     plt.ylim(-1, world_size[1]+1)
     plt.xticks(list(range(world_size[0]+1)))
@@ -226,6 +265,19 @@ if __name__ == "__main__":
     plt.xlabel('X',fontsize=20)
     plt.ylabel('Y',fontsize=20)
     plt.title('Mult-Agent Path Planning - Simulation')
+    plt.grid()   
 
+    ani = animation.FuncAnimation(fig, animate, interval=400, frames=13, repeat=True)
+    plt.show()
+    plt.xlim(-1, world_size[0]+1)
+    plt.ylim(-1, world_size[1]+1)
+    plt.xticks(list(range(world_size[0]+1)))
+    plt.yticks(list(range(world_size[1]+1)))
+    plt.xlabel('X',fontsize=20)
+    plt.ylabel('Y',fontsize=20)
+    plt.title('Mult-Agent Path Planning - Simulation')
+    plt.grid() 
+    ani.save('MRE.gif', writer='pillow')#writer)
+    plt.show()
 
 # animate graph - make time := distance (need to define a min distance/time that robots can get to eachother (collison avoidance))
