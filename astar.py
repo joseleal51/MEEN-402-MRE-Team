@@ -247,7 +247,7 @@ if __name__ == "__main__":
         points = data[i]
         for j, robo in enumerate(points):
             print('robo: ', robo, 'j: ', j)
-            ax1.scatter(robo[0], robo[1], c=colors[j])
+            ax1.scatter(robo[0], robo[1], s=100, c=colors[j])
         ax1.grid()
         #ax1.scatter(i,i,s=40,c='g')
         ax1.set_xlim(-1, world_size[0]+1)
@@ -257,7 +257,14 @@ if __name__ == "__main__":
         ax1.set_xlabel('X',fontsize=20)
         ax1.set_ylabel('Y',fontsize=20)
         ax1.set_title('Mult-Agent Path Planning - Simulation')
-        ax1.grid() 
+        ax1.grid(1)
+        for j, result in enumerate(results):
+            ax1.plot([x[0] for x in result], [x[1] for x in result], c=colors[j] )
+        for i in range(num_robots):
+            ax1.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c=colors[i])
+            ax1.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c=colors[i])
+            ax1.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
+            ax1.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
     plt.xlim(-1, world_size[0]+1)
     plt.ylim(-1, world_size[1]+1)
     plt.xticks(list(range(world_size[0]+1)))
