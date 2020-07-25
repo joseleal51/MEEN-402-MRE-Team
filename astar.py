@@ -6,7 +6,7 @@ import matplotlib.animation as animation
 
 
 class AStarGraph(object):
-    # Define a class board like grid with barriers
+    # This class creates an object that is the grid-world with the barries
 
     def __init__(self, world_size, barrier_points):
         self.x_size = world_size[0]
@@ -21,7 +21,9 @@ class AStarGraph(object):
         D2 = 1
         dx = abs(start[0] - goal[0])
         dy = abs(start[1] - goal[1])
-        h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy) # reduces dx + dy - min(dx, dy)
+        h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy) # reduces dx + dy - min(dx, dy) for D=D2=1
+
+        # Use euclidean distance heruistic
         #h = sqrt(dx*dx + dy*dy)
         #print('\nh:', h, ' start:', start, ' goal:', goal, '\n')
         return h
@@ -113,39 +115,55 @@ class AStarSearch:
 
         raise RuntimeError("A* failed to find a solution")
 
-
-class simulation:
-    """ doc string"""
+class ScheduleRobots:
+    """ Take the initial robot paths and determine when, where and which robots collide. Then determine which robots
+    need to 'wait' so that the collisions will not happen. The output will be the new discritized points that the robots
+    will occupy in time"""
     def __init__(self, routes):
-
-        #self.longest_route_len = max([len(x ) for x in routes.values()])
-        self.longest_route_len = max([len(x ) for x in routes])
+        self.longest_route_len = max([len(x) for x in routes])
         self.time = range(self.longest_route_len)
         self.num_robots = len(routes)
 
+        #self.priorities = 
+
         #print('yoyo', self.longest_route_len)
 
-        # Transpose paths to time
+        """ Transpose paths to time - becasue the routes input is a list of list where the 
+            first list is the route of one robot. Example: [[robot 1 route in tuple's of points],
+            [robot 2 route in tuple's of points]]
+            After being transposted the first list in the list is the first point of each robot
+            Example: [[robo1 point 1, robo2 point 1], [robo1 point 2, robo2 point 2]]
+        """
+
         self.routes_time = [[(0,0)]*self.num_robots for t in self.time]
-        #print(self.routes_time)
         for t in self.time:
-            for j in range(self.num_robots):
+            for robo in range(self.num_robots):
                 try:
-                    #routes_time[t][j] = routes.values()[j][t]
-                    self.routes_time[t][j] = routes[j][t]
+                    self.routes_time[t][robo] = routes[robo][t]
                 except: # the route for a robot is shorter than the other ones
-                    print("exception handled")
-                    self.routes_time[t][j] = self.routes_time[t-1][j-1]
-        #print('test\n',routes_time)
-            
+                    # make the robot stay at its end point
+                    #print("exception handled")
+                    self.routes_time[t][robo] = self.routes_time[t-1][robo]     
+
+        #r [[robo1 route (0,0),(1,1),(2,2)], [robo2 route]]
+        #print('7 ???: ', self.routes_time[7][0][0])
+        print('\nRoutes')
+        for i in range(len(self.routes_time)): print(self.routes_time[i], 'T = ',i)
+        for t in self.time:
+            for robo in range(self.num_robots):
+                pass
+
 
         # Find collisons
+        collisions = {}
+        c = []
         for i, locations in enumerate(self.routes_time):
-            #print('locations: ', locations)
-            # return a list of one point of each robot in time
-            #print("test2: ",[locations.count(i) for i in locations])
+            a = [locations.count(j) for j in locations]
+            print('T= ',i, 'Count of repeated points (2 means collision)', a)
+        
             if max([locations.count(j) for j in locations]) > 1:
-                 print('COLLISION at t=', i)
+                print(max([locations.count(j) for j in locations]))
+                print('COLLISION at t=', i)
 
 
         #for path in routes.values():
@@ -156,39 +174,19 @@ class simulation:
 
 
     def find_collisions(self):
-        pass
-
-    def make_plot(self):
-        pass
-    
-    def animate(self, i):
-        ax1.clear()
-        data = self.routes_time[i]
-        print('data: ', data, '\ti: ', i)
-        #for i in range(num_robots):
-        robo1_data = data[i]
-        print('robo1 data: ', robo1_data)
-        ax1.scatter(robo1_data[0],robo1_data[1])
-        #p = plt.scatter(robo1_data[0],robo1_data[1])
-        #plt.setp(p)
-        #plt.show()
-        #plt.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c='r')
-        #plt.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c='g')
-        #plt.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
-        #plt.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
-            
+        pass          
 
 
-if __name__ == "__main__":
+def main_calculation(
     barrier_points=[[(3,4),(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
-                     (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)]]
-
-    world_size = (10, 10)
-    graph = AStarGraph(world_size, barrier_points)
-    robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)]
-    robots_ends = [(8,4), (1,1), (7,3), (3,3), (2,2)]
+                     (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)],
+                     [(7,9),(8,9)]],
+    world_size = (10, 10),
+    robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)],
+    robots_ends = [(8,4), (1,1), (7,3), (3,3), (2,2)]):
+    
     num_robots = len(robots_starts)
-
+    graph = AStarGraph(world_size, barrier_points)
     results = []#{v:None for v in range(num_robots)}
     costs = []
 
@@ -197,11 +195,13 @@ if __name__ == "__main__":
         #results[i] = my_tuple[0]
         results.append(my_tuple[0])
         costs.append(my_tuple[1])
+    print('paths:')
+    for r in results: print(r, len(r))
     #result, cost = AStarSearch.solve(robot_star, robot_end, graph)
 
     #for i in range(num_robots): print("\nroute "+str(i+1)+": ", results[i], "\ncost", costs[i])
 
-    sim = simulation(results)
+    sim = ScheduleRobots(results)
 
     """     for result in results:
         plt.plot([x[0] for x in result], [x[1] for x in result])
@@ -233,9 +233,8 @@ if __name__ == "__main__":
     #ax = plt.axes(xlim=(-50, 50), ylim=(-50, 50)) 
     ax1 = fig.add_subplot(1,1,1)
     data = sim.routes_time
-    print('data: ', data, len(data))
+    #print(['Robo1'*num_robots])
     colors = {0:'k', 1:'r', 2:'g', 3:'b', 4:'c', 5:'y', 6:'g'}
-
  
     def animate(i):
         ax1.clear()
@@ -246,7 +245,7 @@ if __name__ == "__main__":
             ax1.plot(x, y, 'k')
         points = data[i]
         for j, robo in enumerate(points):
-            print('robo: ', robo, 'j: ', j)
+            #print('robo: ', robo, 'j: ', j)
             ax1.scatter(robo[0], robo[1], s=100, c=colors[j])
         ax1.grid()
         #ax1.scatter(i,i,s=40,c='g')
@@ -283,8 +282,13 @@ if __name__ == "__main__":
     plt.xlabel('X',fontsize=20)
     plt.ylabel('Y',fontsize=20)
     plt.title('Mult-Agent Path Planning - Simulation')
-    plt.grid() 
+    plt.grid()
     ani.save('MRE.gif', writer='pillow')#writer)
     plt.show()
 
 # animate graph - make time := distance (need to define a min distance/time that robots can get to eachother (collison avoidance))
+
+
+if __name__ == "__main__":
+    main_calculation()
+
