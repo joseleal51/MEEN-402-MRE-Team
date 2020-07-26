@@ -1,6 +1,7 @@
 from __future__ import print_function
 import matplotlib.pyplot as plt
 from math import sqrt
+import numpy
 
 import matplotlib.animation as animation
 
@@ -145,13 +146,31 @@ class ScheduleRobots:
                     #print("exception handled")
                     self.routes_time[t][robo] = self.routes_time[t-1][robo]     
 
+
         #r [[robo1 route (0,0),(1,1),(2,2)], [robo2 route]]
         #print('7 ???: ', self.routes_time[7][0][0])
         print('\nRoutes')
+
+
+        #Defining Priorities
+        routes_length = [len(j) for j in routes]
+        #routes_length = [9, 13, 9, 13, 10]
+        routes_length = numpy.array(routes_length)
+
+        temp = routes_length.argsort()
+        inverse_priority_list= temp.argsort()
+        #inverse_priority_list = [r1_inv_priority, r2_inv_priority, r3_inv_priority, r4_inv_priority, r5_inv_priority]
+        #print("Priority List = ", inverse_priority_list)
+
+
+
+        # NEED TO FIND A WAY TO INVERT THE PRIORITY ORDER
+
+
+
+
+
         for i in range(len(self.routes_time)): print(self.routes_time[i], 'T = ',i)
-        for t in self.time:
-            for robo in range(self.num_robots):
-                pass
 
 
         # Find collisons
