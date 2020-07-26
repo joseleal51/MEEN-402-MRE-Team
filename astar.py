@@ -122,7 +122,7 @@ class ScheduleRobots:
     will occupy in time"""
     def __init__(self, routes):
         self.longest_route_len = max([len(x) for x in routes])
-        self.time = range(self.longest_route_len)
+        self.time = self.longest_route_len
         self.num_robots = len(routes)
 
         #self.priorities = 
@@ -136,8 +136,8 @@ class ScheduleRobots:
             Example: [[robo1 point 1, robo2 point 1], [robo1 point 2, robo2 point 2]]
         """
 
-        self.routes_time = [[(0,0)]*self.num_robots for t in self.time]
-        for t in self.time:
+        self.routes_time = [[(0,0)]*self.num_robots for t in range(self.time)]
+        for t in range(self.time):
             for robo in range(self.num_robots):
                 try:
                     self.routes_time[t][robo] = routes[robo][t]
@@ -178,7 +178,7 @@ class ScheduleRobots:
         c = []
         for i, locations in enumerate(self.routes_time):
             a = [locations.count(j) for j in locations]
-            print('T= ',i, 'Count of repeated points (2 means collision)', a)
+            print('T= ',i, 'Count of each point in time (2 means collision)', a)
         
             if max([locations.count(j) for j in locations]) > 1:
                 print(max([locations.count(j) for j in locations]))
@@ -202,7 +202,7 @@ def main_calculation(
                      [(7,9),(8,9)]],
     world_size = (10, 10),
     robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)],
-    robots_ends = [(8,4), (1,1), (7,3), (3,3), (2,2)]):
+    robots_ends = [(8,4), (1,1), (7,3), (4,3), (2,2)]):
     
     num_robots = len(robots_starts)
     graph = AStarGraph(world_size, barrier_points)
@@ -215,41 +215,15 @@ def main_calculation(
         results.append(my_tuple[0])
         costs.append(my_tuple[1])
     print('paths:')
-    for r in results: print(r, len(r))
+    for r in results: print(len(r), '\n', r, '\n\n')
     #result, cost = AStarSearch.solve(robot_star, robot_end, graph)
 
     #for i in range(num_robots): print("\nroute "+str(i+1)+": ", results[i], "\ncost", costs[i])
 
     sim = ScheduleRobots(results)
-
-    """     for result in results:
-        plt.plot([x[0] for x in result], [x[1] for x in result])
-    for barrier in graph.barriers:
-        #print('\nBarrier: ', barrier)
-        x = [v[0] for v in barrier]
-        y = [v[1] for v in barrier]
-        plt.plot(x, y, 'k')
-
-    for i in range(num_robots):
-        plt.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c='r')
-        plt.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c='g')
-        plt.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
-        plt.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
-    plt.xlim(-1, world_size[0]+1)
-    plt.ylim(-1, world_size[1]+1)
-    plt.xticks(list(range(world_size[0]+1)))
-    plt.yticks(list(range(world_size[1]+1)))
-    #plt.title('G_diag:'+str())
-    plt.grid()
-    plt.show()#block=False) """
-
     
-    # animation?
-    #Writer = animation.writers['pillow']#'ffmpeg']
-    #writer = Writer(fps=1, metadata=dict(artist='Mike Ashley'), bitrate=1800)
-
-    fig = plt.figure(figsize=(10,6))
-    #ax = plt.axes(xlim=(-50, 50), ylim=(-50, 50)) 
+    # animation
+    fig = plt.figure(num='MRE Simulaion', figsize=(10,6)) 
     ax1 = fig.add_subplot(1,1,1)
     data = sim.routes_time
     #print(['Robo1'*num_robots])
@@ -262,18 +236,21 @@ def main_calculation(
             x = [v[0] for v in barrier]
             y = [v[1] for v in barrier]
             ax1.plot(x, y, 'k')
-        points = data[i]
+        try: points = data[i]
+        except: # exception will be raised when animation frames are longer than the data
+            points = data[-1] # hold the last location of the robots
+
         for j, robo in enumerate(points):
             #print('robo: ', robo, 'j: ', j)
             ax1.scatter(robo[0], robo[1], s=100, c=colors[j])
         ax1.grid()
-        #ax1.scatter(i,i,s=40,c='g')
         ax1.set_xlim(-1, world_size[0]+1)
         ax1.set_ylim(-1, world_size[1]+1)
         ax1.set_xticks(list(range(world_size[0]+1)))
         ax1.set_yticks(list(range(world_size[1]+1)))
-        ax1.set_xlabel('X',fontsize=20)
-        ax1.set_ylabel('Y',fontsize=20)
+        if i < sim.time: ax1.set_xlabel('T = '+str(i),fontsize=20) 
+        else: ax1.set_xlabel('T = '+str(sim.time-1),fontsize=20)
+        #ax1.set_ylabel('Y',fontsize=20)
         ax1.set_title('Mult-Agent Path Planning - Simulation')
         ax1.grid(1)
         for j, result in enumerate(results):
@@ -282,28 +259,11 @@ def main_calculation(
             ax1.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c=colors[i])
             ax1.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c=colors[i])
             ax1.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
-            ax1.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
-    plt.xlim(-1, world_size[0]+1)
-    plt.ylim(-1, world_size[1]+1)
-    plt.xticks(list(range(world_size[0]+1)))
-    plt.yticks(list(range(world_size[1]+1)))
-    plt.xlabel('X',fontsize=20)
-    plt.ylabel('Y',fontsize=20)
-    plt.title('Mult-Agent Path Planning - Simulation')
-    plt.grid()   
+            ax1.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1)) 
 
-    ani = animation.FuncAnimation(fig, animate, interval=400, frames=13, repeat=True)
+    ani = animation.FuncAnimation(fig, animate, interval=600, frames=sim.time+5, repeat=True)
     plt.show()
-    plt.xlim(-1, world_size[0]+1)
-    plt.ylim(-1, world_size[1]+1)
-    plt.xticks(list(range(world_size[0]+1)))
-    plt.yticks(list(range(world_size[1]+1)))
-    plt.xlabel('X',fontsize=20)
-    plt.ylabel('Y',fontsize=20)
-    plt.title('Mult-Agent Path Planning - Simulation')
-    plt.grid()
-    ani.save('MRE.gif', writer='pillow')#writer)
-    plt.show()
+    #ani.save('MRE.gif', writer='pillow')
 
 # animate graph - make time := distance (need to define a min distance/time that robots can get to eachother (collison avoidance))
 
