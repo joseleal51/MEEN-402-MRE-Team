@@ -174,8 +174,7 @@ class ScheduleRobots:
 
 
         # Find collisons
-        collisions = {}
-        c = []
+        self.collisions = {}
         for i, locations in enumerate(self.routes_time):
             a = [locations.count(j) for j in locations]
             print('T= ',i, 'Count of each point in time (2 means collision)', a)
@@ -183,6 +182,8 @@ class ScheduleRobots:
             if max([locations.count(j) for j in locations]) > 1:
                 print(max([locations.count(j) for j in locations]))
                 print('COLLISION at t=', i)
+                self.collisions[i] = locations[locations.index(max(locations))]
+                print('collisions: ', self.collisions)
 
 
         #for path in routes.values():
@@ -226,6 +227,7 @@ def main_calculation(
     fig = plt.figure(num='MRE Simulaion', figsize=(10,6)) 
     ax1 = fig.add_subplot(1,1,1)
     data = sim.routes_time
+    collisions = sim.collisions
     #print(['Robo1'*num_robots])
     colors = {0:'k', 1:'r', 2:'g', 3:'b', 4:'c', 5:'y', 6:'g'}
  
@@ -236,6 +238,7 @@ def main_calculation(
             x = [v[0] for v in barrier]
             y = [v[1] for v in barrier]
             ax1.plot(x, y, 'k')
+            
         try: points = data[i]
         except: # exception will be raised when animation frames are longer than the data
             points = data[-1] # hold the last location of the robots
@@ -253,6 +256,12 @@ def main_calculation(
         #ax1.set_ylabel('Y',fontsize=20)
         ax1.set_title('Mult-Agent Path Planning - Simulation')
         ax1.grid(1)
+
+        try: 
+            ax1.scatter(collisions[i][0], collisions[i][1], 300, facecolors='none', edgecolors='r')
+            ax1.text(collisions[i][0]+0.5, collisions[i][1], "COLLISION")
+        except: pass
+
         for j, result in enumerate(results):
             ax1.plot([x[0] for x in result], [x[1] for x in result], c=colors[j] )
         for i in range(num_robots):
