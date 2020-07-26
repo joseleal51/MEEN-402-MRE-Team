@@ -15,6 +15,10 @@ class AStarGraph(object):
         self.barriers = barrier_points
         #print("type: ", type(self.barriers))
 
+
+
+
+
     def heuristic(self, start, goal):
         # Use Chebyshev distance heuristic if we can move one square either
         # adjacent or diagonal
@@ -40,6 +44,7 @@ class AStarGraph(object):
             n.append((x2, y2))
             #print('get_vertex_neighbours: (x2, y2)', (x2, y2))
         return n
+
 
     def move_cost(self, a, b):
         for barrier in self.barriers:
@@ -125,11 +130,11 @@ class ScheduleRobots:
         self.time = self.longest_route_len
         self.num_robots = len(routes)
 
-        #self.priorities = 
+        self.priorities = [0, 3, 1, 4, 2]
 
-        #print('yoyo', self.longest_route_len)
+#        print('yoyo1', self.longest_route_len)
 
-        """ Transpose paths to time - becasue the routes input is a list of list where the 
+        """ Transpose paths to time - becasue the routes input is a list of list where the
             first list is the route of one robot. Example: [[robot 1 route in tuple's of points],
             [robot 2 route in tuple's of points]]
             After being transposted the first list in the list is the first point of each robot
@@ -137,6 +142,7 @@ class ScheduleRobots:
         """
 
         self.routes_time = [[(0,0)]*self.num_robots for t in range(self.time)]
+        
         for t in range(self.time):
             for robo in range(self.num_robots):
                 try:
@@ -144,7 +150,7 @@ class ScheduleRobots:
                 except: # the route for a robot is shorter than the other ones
                     # make the robot stay at its end point
                     #print("exception handled")
-                    self.routes_time[t][robo] = self.routes_time[t-1][robo]     
+                    self.routes_time[t][robo] = self.routes_time[t-1][robo]
 
 
         #r [[robo1 route (0,0),(1,1),(2,2)], [robo2 route]]
@@ -155,17 +161,21 @@ class ScheduleRobots:
         #Defining Priorities
         routes_length = [len(j) for j in routes]
         #routes_length = [9, 13, 9, 13, 10]
+        print('1 routes_length',  routes_length)
+        
         routes_length = numpy.array(routes_length)
-
+        
         temp = routes_length.argsort()
-        inverse_priority_list= temp.argsort()
-        #inverse_priority_list = [r1_inv_priority, r2_inv_priority, r3_inv_priority, r4_inv_priority, r5_inv_priority]
-        #print("Priority List = ", inverse_priority_list)
-
-
-
-        # NEED TO FIND A WAY TO INVERT THE PRIORITY ORDER
-
+        print('temp', temp)
+        inverse_priority_list = temp.argsort()
+        print('inverse_priority_list= temp.argsort()', inverse_priority_list )
+        
+        self.priorities = numpy.array(self.priorities)
+        
+        inverse_priority_list = self.priorities.argsort()
+        
+        # Priority List Generated: `inverse_priority_list`
+        print("Priority List = ", inverse_priority_list)
 
 
 
@@ -175,6 +185,8 @@ class ScheduleRobots:
 
         # Find collisons
         self.collisions = {}
+        print('routes_time', self.routes_time)
+        
         for i, locations in enumerate(self.routes_time):
             a = [locations.count(j) for j in locations]
             print('T= ',i, 'Count of each point in time (2 means collision)', a)
@@ -192,9 +204,10 @@ class ScheduleRobots:
 
         # Create robot "objects???" good idea to make another class???? Just hold info in a dictionary for now
 
+        # redefine routes time
 
     def find_collisions(self):
-        pass          
+        pass
 
 
 def main_calculation(
@@ -224,7 +237,7 @@ def main_calculation(
     sim = ScheduleRobots(results)
     
     # animation
-    fig = plt.figure(num='MRE Simulaion', figsize=(10,6)) 
+    fig = plt.figure(num='MRE Simulaion', figsize=(10,6))
     ax1 = fig.add_subplot(1,1,1)
     data = sim.routes_time
     collisions = sim.collisions
@@ -251,13 +264,13 @@ def main_calculation(
         ax1.set_ylim(-1, world_size[1]+1)
         ax1.set_xticks(list(range(world_size[0]+1)))
         ax1.set_yticks(list(range(world_size[1]+1)))
-        if i < sim.time: ax1.set_xlabel('T = '+str(i),fontsize=20) 
+        if i < sim.time: ax1.set_xlabel('T = '+str(i),fontsize=20)
         else: ax1.set_xlabel('T = '+str(sim.time-1),fontsize=20)
         #ax1.set_ylabel('Y',fontsize=20)
         ax1.set_title('Mult-Agent Path Planning - Simulation')
         ax1.grid(1)
 
-        try: 
+        try:
             ax1.scatter(collisions[i][0], collisions[i][1], 300, facecolors='none', edgecolors='r')
             ax1.text(collisions[i][0]+0.5, collisions[i][1], "COLLISION")
         except: pass
@@ -268,7 +281,7 @@ def main_calculation(
             ax1.scatter(robots_starts[i][0],robots_starts[i][1],s=40,c=colors[i])
             ax1.scatter(robots_ends[i][0],robots_ends[i][1],s=40,c=colors[i])
             ax1.text(robots_starts[i][0],robots_starts[i][1],"Start "+str(i+1))
-            ax1.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1)) 
+            ax1.text(robots_ends[i][0],robots_ends[i][1],"End"+str(i+1))
 
     ani = animation.FuncAnimation(fig, animate, interval=600, frames=sim.time+5, repeat=True)
     plt.show()
