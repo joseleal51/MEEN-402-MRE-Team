@@ -146,7 +146,7 @@ class ScheduleRobots:
                     #print("exception handled")
                     self.routes_time[t][robo] = self.routes_time[t-1][robo]  
 
-        mod_routes = np.array([[(0,0)]*self.time for x in range(self.num_robots)])
+        mod_routes = [[(0,0)]*self.time for x in range(self.num_robots)]
         for t in range(self.time):
             for robo in range(self.num_robots):
                     mod_routes[robo][t] = self.routes_time[t][robo]
@@ -197,12 +197,18 @@ class ScheduleRobots:
                 mod_routes[robots[1]].insert(mod_routes[robots[1]][0])
                 #mod_routes[robots[1]].delete(-1)]
             else:
-                print('data type? ', type(mod_routes[robots[1]]),'\n\n\n', mod_routes[robots[1]])
-                mod_routes[robots[0]].insert(mod_routes[robots[0]][0])
+                print("robots" , robots)
+                print("Initial Routes ", mod_routes[robots[0]], type(mod_routes[robots[0]][0]))
+                #print('data type? ', type(mod_routes[robots[1]]),'\n\n\n', mod_routes[robots[1]])
+                
+                mod_routes[robots[0]].insert(0, mod_routes[robots[0]][0])
+                #mod_routes[2] = np.insert(mod_routes[2], mod_routes[2][0])
+
+                print("Modified Route for Robot ", robots[0]+1 , ": /n" , mod_routes[robots[0]])
                 #mod_routes[robots[1]].delete(-1)]
         
         
-        print('mod_routes2\n',mod_routes)
+        print('mod_routes\n',mod_routes)
 
         # temporary.. use the mod_routes to redefine the self.routes_times for the animation
         for t in range(self.time):
@@ -224,10 +230,10 @@ class robot(object):
         self.priority = None
         self.steps = None
 
-    def repeat_endpoint(self):
-        try:
-            self.mod_path.append(self.mod_path[-1])
-        except: print('None type?')
+    #def repeat_endpoint(self):
+       # try:
+         #   self.mod_path.append(self.mod_path[-1])
+        #except: print('None type?')
 
 
 def main_calculation(
