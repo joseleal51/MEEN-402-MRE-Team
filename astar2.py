@@ -1,7 +1,7 @@
 from __future__ import print_function
 import matplotlib.pyplot as plt
 from math import sqrt
-import numpy
+import numpy as np
 
 import matplotlib.animation as animation
 
@@ -125,8 +125,8 @@ class ScheduleRobots:
         self.time = self.longest_route_len
         self.num_robots = len(routes)
 
-        #self.priorities = 
-
+        self.priorities = []
+        print('routes')
         #print('yoyo', self.longest_route_len)
 
         """ Transpose paths to time - becasue the routes input is a list of list where the 
@@ -144,34 +144,26 @@ class ScheduleRobots:
                 except: # the route for a robot is shorter than the other ones
                     # make the robot stay at its end point
                     #print("exception handled")
-                    self.routes_time[t][robo] = self.routes_time[t-1][robo]     
+                    self.routes_time[t][robo] = self.routes_time[t-1][robo]  
 
+        mod_routes = np.array([[(0,0)]*self.time for x in range(self.num_robots)])
+        for t in range(self.time):
+            for robo in range(self.num_robots):
+                    mod_routes[robo][t] = self.routes_time[t][robo]
 
+        print('\nmod_routes:\n',mod_routes)
         #r [[robo1 route (0,0),(1,1),(2,2)], [robo2 route]]
         #print('7 ???: ', self.routes_time[7][0][0])
-        print('\nRoutes')
-
+        
+        routes = np.array(routes)
+        print('routes: ', routes)
 
         #Defining Priorities
         routes_length = [len(j) for j in routes]
         #routes_length = [9, 13, 9, 13, 10]
-        routes_length = numpy.array(routes_length)
-
-        temp = routes_length.argsort()
-        inverse_priority_list= temp.argsort()
-        #inverse_priority_list = [r1_inv_priority, r2_inv_priority, r3_inv_priority, r4_inv_priority, r5_inv_priority]
-        #print("Priority List = ", inverse_priority_list)
-
-
-
-        # NEED TO FIND A WAY TO INVERT THE PRIORITY ORDER
-
-
-
-
-
+        priority = np.array(routes_length).argsort().argsort()
+        print('priority: ', priority)
         for i in range(len(self.routes_time)): print(self.routes_time[i], 'T = ',i)
-
 
         # Find collisons
         self.collisions = {}
@@ -179,14 +171,50 @@ class ScheduleRobots:
             a = [locations.count(j) for j in locations]
             print('T= ',i, 'Count of each point in time (2 means collision)', a)
         
-            if max([locations.count(j) for j in locations]) > 1:
+            if max(a) > 1: # then there was a collision
                 print(max([locations.count(j) for j in locations]))
                 print('COLLISION at t=', i)
-                self.collisions[i] = locations[locations.index(max(locations))]
+                robots_that_collided = []
+                for j in range(self.num_robots):
+                    if a[j] > 1: 
+                        robots_that_collided.append(j)
+                        print('Robot ', j+1, ' Collided!')
+                print('robots_that_collided', robots_that_collided)
+                self.collisions[i] = robots_that_collided#[locations[v] for v in robots_that_collided]
+ 
+                print('Robots that collided: ')
+                
                 print('collisions: ', self.collisions)
 
+        for time, robots in self.collisions.items():
+            print(time,'time')
+            print(robots,'robos')
+            point = self.routes_time[time][robots[0]]
+            print('The point that they collided at is: ', point)
 
-class robot:
+            if priority[robots[0]] > priority[robots[1]]:
+                print('data type? ', type(mod_routes[robots[1]]), mod_routes[robots[1]])
+                mod_routes[robots[1]].insert(mod_routes[robots[1]][0])
+                #mod_routes[robots[1]].delete(-1)]
+            else:
+                print('data type? ', type(mod_routes[robots[1]]),'\n\n\n', mod_routes[robots[1]])
+                mod_routes[robots[0]].insert(mod_routes[robots[0]][0])
+                #mod_routes[robots[1]].delete(-1)]
+        
+        
+        print('mod_routes2\n',mod_routes)
+
+        # temporary.. use the mod_routes to redefine the self.routes_times for the animation
+        for t in range(self.time):
+            for robo in range(self.num_robots):
+                try:
+                    self.routes_time[t][robo] = routes[robo][t]
+                except: # the route for a robot is shorter than the other ones
+                    # make the robot stay at its end point
+                    #print("exception handled")
+                    self.routes_time[t][robo] = self.routes_time[t-1][robo]
+
+class robot(object):
     '''doc string'''
     def __init__(self, start_point, end_point):
         self.start_point = start_point
@@ -196,6 +224,11 @@ class robot:
         self.priority = None
         self.steps = None
 
+    def repeat_endpoint(self):
+        try:
+            self.mod_path.append(self.mod_path[-1])
+        except: print('None type?')
+
 
 def main_calculation(
     barrier_points=[[(3,4),(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
@@ -203,7 +236,7 @@ def main_calculation(
                      [(7,9),(8,9)]],
     world_size = (10, 10),
     robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)],
-    robots_ends = [(8,4), (1,1), (7,3), (4,3), (2,2)]):
+    robots_ends = [(8,1), (1,1), (7,3), (4,3), (2,2)]):
     
     num_robots = len(robots_starts)
 
@@ -226,14 +259,11 @@ def main_calculation(
     print('paths:')
     for r in results: print(len(r), '\n', r, '\n\n')
 
-    for i in range(num_robots)
-    robots[i].priority = np.array([len(v) for v in results]).argsort().argsort()[i] for i in 
+    for i in range(num_robots):
+        robots[i].priority = np.array([len(v) for v in results]).argsort().argsort()[i] 
 
+    sim = ScheduleRobots(results)
 
-    sim = ScheduleRobots(results, robots)
-
-
-    
     # animation
     fig = plt.figure(num='MRE Simulaion', figsize=(10,6)) 
     ax1 = fig.add_subplot(1,1,1)
@@ -283,7 +313,7 @@ def main_calculation(
 
     ani = animation.FuncAnimation(fig, animate, interval=600, frames=sim.time+5, repeat=True)
     plt.show()
-    ani.save('MRE_with_collisions.gif', writer='pillow')
+    #ani.save('MRE_with_collisions.gif', writer='pillow')
 
 # animate graph - make time := distance (need to define a min distance/time that robots can get to eachother (collison avoidance))
 
