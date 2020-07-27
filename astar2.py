@@ -18,14 +18,14 @@ class AStarGraph(object):
     def heuristic(self, start, goal):
         # Use Chebyshev distance heuristic if we can move one square either
         # adjacent or diagonal
-        D = 1
-        D2 = 1
+        #D = 1
+        #D2 = 1
         dx = abs(start[0] - goal[0])
         dy = abs(start[1] - goal[1])
-        h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy) # reduces dx + dy - min(dx, dy) for D=D2=1
+        #h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy) # reduces dx + dy - min(dx, dy) for D=D2=1
 
         # Use euclidean distance heruistic
-        #h = sqrt(dx*dx + dy*dy)
+        h = sqrt(dx*dx + dy*dy)
         #print('\nh:', h, ' start:', start, ' goal:', goal, '\n')
         return h
 
@@ -33,6 +33,8 @@ class AStarGraph(object):
         n = []
         # Moves allowed like a chess king
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]:
+        #for dx, dy in [(0.1, 0), (-0.1, 0), (0, 0.1), (0, -0.1), (0.1, 0.1), (-0.1, 0.1), (0.1, -0.1), (-0.1, -0.1)]:
+        #for dx, dy in [(0.5, 0), (-0.5, 0), (0, 0.5), (0, -0.5), (0.5, 0.5), (-0.5, 0.5), (0.5, -0.5), (-0.5, -0.5)]:
             x2 = pos[0] + dx
             y2 = pos[1] + dy
             if x2 < 0 or x2 > self.x_size or y2 < 0 or y2 > self.y_size:
@@ -124,10 +126,9 @@ class ScheduleRobots:
         self.longest_route_len = max([len(x) for x in routes])
         self.time = self.longest_route_len
         self.num_robots = len(routes)
-
+        self.collisions_robots = {}
+        self.collisions_points = {}
         self.priorities = []
-        print('routes')
-        #print('yoyo', self.longest_route_len)
 
         """ Transpose paths to time - becasue the routes input is a list of list where the 
             first list is the route of one robot. Example: [[robot 1 route in tuple's of points],
@@ -166,7 +167,6 @@ class ScheduleRobots:
         for i in range(len(self.routes_time)): print(self.routes_time[i], 'T = ',i)
 
         # Find collisons
-        self.collisions = {}
         for i, locations in enumerate(self.routes_time):
             a = [locations.count(j) for j in locations]
             print('T= ',i, 'Count of each point in time (2 means collision)', a)
@@ -180,38 +180,40 @@ class ScheduleRobots:
                         robots_that_collided.append(j)
                         print('Robot ', j+1, ' Collided!')
                 print('robots_that_collided', robots_that_collided)
-                self.collisions[i] = robots_that_collided#[locations[v] for v in robots_that_collided]
+                self.collisions_robots[i] = robots_that_collided #[locations[v] for v in robots_that_collided]
  
                 print('Robots that collided: ')
                 
-                print('collisions: ', self.collisions)
+                print('collisions: ', self.collisions_robots)
 
-        for time, robots in self.collisions.items():
+        for time, robots in self.collisions_robots.items():
             print(time,'time')
             print(robots,'robos')
             point = self.routes_time[time][robots[0]]
             print('The point that they collided at is: ', point)
+            self.collisions_points[time] = point
+            print('self.collisions_points', self.collisions_points)
 
             if priority[robots[0]] > priority[robots[1]]:
                 print("Robots Colliding" , robots)
-                print("Initial Routes for Robot ", robots[1]+1, " : ", mod_routes[robots[1]], type(mod_routes[robots[1]][0]))
+                print("Initial Routes for Robot ", robots[1]+1, " : \n", mod_routes[robots[1]], type(mod_routes[robots[1]][0]))
                 #print('data type? ', type(mod_routes[robots[1]]),'\n\n\n', mod_routes[robots[1]])
                 
                 mod_routes[robots[1]].insert(0, mod_routes[robots[1]][0])
                 #mod_routes[_] = np.insert(mod_routes[_], mod_routes[_][0])
 
-                print("Modified Route for Robot ", robots[1]+1 , ": /n" , mod_routes[robots[1]])
+                print("Modified Route for Robot ", robots[1]+1 , ": \n" , mod_routes[robots[1]])
                 #Deletes Last Point For it to become a square
                 mod_routes[robots[1]].pop(-1)
             else:
                 print("Robots Colliding" , robots)
-                print("Initial Routes for Robot ", robots[0]+1, " : ", mod_routes[robots[0]], type(mod_routes[robots[0]][0]))
+                print("Initial Routes for Robot ", robots[0]+1, " : \n", mod_routes[robots[0]], type(mod_routes[robots[0]][0]))
                 #print('data type? ', type(mod_routes[robots[1]]),'\n\n\n', mod_routes[robots[1]])
                 
                 mod_routes[robots[0]].insert(0, mod_routes[robots[0]][0])
                 #mod_routes[2] = np.insert(mod_routes[2], mod_routes[2][0])
 
-                print("Modified Route for Robot ", robots[0]+1 , ": /n" , mod_routes[robots[0]])
+                print("Modified Route for Robot ", robots[0]+1 , ": \n" , mod_routes[robots[0]])
                 #Deletes Last Point For it to become a square
                 mod_routes[robots[0]].pop(-1)
         
@@ -222,26 +224,26 @@ class ScheduleRobots:
         for t in range(self.time):
             for robo in range(self.num_robots):
                 try:
-                    self.routes_time[t][robo] = routes[robo][t]
+                    self.routes_time[t][robo] = mod_routes[robo][t]
                 except: # the route for a robot is shorter than the other ones
                     # make the robot stay at its end point
                     #print("exception handled")
                     self.routes_time[t][robo] = self.routes_time[t-1][robo]
 
 class robot(object):
-    '''doc string'''
+    '''curretnly unused'''
     def __init__(self, start_point, end_point):
         self.start_point = start_point
         self.end_point = end_point
         self.path = None            # Original A* output
-        self.mod_path = None        # List of points that correspond to where the robot should be at each time
+        self.mod_path = []        # List of points that correspond to where the robot should be at each time
         self.priority = None
         self.steps = None
 
-    #def repeat_endpoint(self):
-       # try:
-         #   self.mod_path.append(self.mod_path[-1])
-        #except: print('None type?')
+    def repeat_endpoint(self):
+        try:
+            self.mod_path.append(self.mod_path[-1])
+        except: print('None type?')
 
 
 def main_calculation(
@@ -250,7 +252,7 @@ def main_calculation(
                      [(7,9),(8,9)]],
     world_size = (10, 10),
     robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)],
-    robots_ends = [(8,1), (1,1), (7,3), (4,3), (2,2)]):
+    robots_ends = [(1,9), (1,1), (9,2), (4,3), (2,2)]):
     
     num_robots = len(robots_starts)
 
@@ -282,7 +284,7 @@ def main_calculation(
     fig = plt.figure(num='MRE Simulaion', figsize=(10,6)) 
     ax1 = fig.add_subplot(1,1,1)
     data = sim.routes_time
-    collisions = sim.collisions
+    collisions = sim.collisions_points
     #print(['Robo1'*num_robots])
     colors = {0:'k', 1:'r', 2:'g', 3:'b', 4:'c', 5:'y', 6:'g'}
  
@@ -293,7 +295,9 @@ def main_calculation(
             x = [v[0] for v in barrier]
             y = [v[1] for v in barrier]
             ax1.plot(x, y, 'k')
-            
+        if i == 0 or i == 1:
+            ax1.scatter(7,7, 300, facecolors='none', edgecolors='r')
+            ax1.text(7+0.5, 7-0.5, "WAIT")    
         try: points = data[i]
         except: # exception will be raised when animation frames are longer than the data
             points = data[-1] # hold the last location of the robots
@@ -309,12 +313,12 @@ def main_calculation(
         if i < sim.time: ax1.set_xlabel('T = '+str(i),fontsize=20) 
         else: ax1.set_xlabel('T = '+str(sim.time-1),fontsize=20)
         #ax1.set_ylabel('Y',fontsize=20)
-        ax1.set_title('Mult-Agent Path Planning - Simulation')
+        ax1.set_title('Mult-Agent Path Planning - Simulation\nCollisions Avoided: YES')
         ax1.grid(1)
 
         try: 
             ax1.scatter(collisions[i][0], collisions[i][1], 300, facecolors='none', edgecolors='r')
-            ax1.text(collisions[i][0]+0.5, collisions[i][1], "COLLISION")
+            ax1.text(collisions[i][0]+0.5, collisions[i][1]-0.5, "NO COLLISION")
         except: pass
 
         for j, result in enumerate(results):
@@ -327,7 +331,7 @@ def main_calculation(
 
     ani = animation.FuncAnimation(fig, animate, interval=600, frames=sim.time+5, repeat=True)
     plt.show()
-    #ani.save('MRE_with_collisions.gif', writer='pillow')
+    ani.save('show_collision1.gif', writer='pillow')
 
 # animate graph - make time := distance (need to define a min distance/time that robots can get to eachother (collison avoidance))
 
