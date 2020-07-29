@@ -1,5 +1,5 @@
 # Multi-Agent Path Planning
-## Texas A&M Mechanical Engineering - Senior Design
+### Texas A&M Mechanical Engineering - Senior Design
 
 ## Licensing Information: READ LICENSE
 
