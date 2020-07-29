@@ -10,19 +10,15 @@ https://github.com/joseleal51/MEEN-402-MRE-Team
 
 ## Author & Contributor List
 
-Michiel Ashley III        (miashley150@tamu dot edu)
-
-Manjeel Regmi
-
-Jose Leal
-
-Mohamad (Mo) Khachfe
-
-Ahmad Tashkandi
-
-Rawad Minkara
-
-Henry Campbell
+|Author|Contact|
+|------|-------|
+|Michiel Ashley III|(miashley150@tamu dot edu)
+|Manjeel Regmi|(-)|
+|Jose Leal|(-)|
+|Mohamad (Mo) Khachfe|(mohamadkhachfe@gmail dot edu)|
+|Ahmad Tashkandi|(-)|
+|Rawad Minkara|(-)|
+|Henry Campbell|(-)|
 
 ## Project Description
 
