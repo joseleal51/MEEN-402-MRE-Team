@@ -1,7 +1,24 @@
-# test
-This repo is where the code for the Multi-Robot Simulation (MRE) senior design project is stored.
+#Multi-Agent Path Planning
+##Texas A&M Mechanical Engineering - Senior Design
 
-The first part of the project is a python programing structure that reads in settings for a test environment designed by the team. The settings include the number of robots and their associated starting and ending posistions. The settings also include the size of the world and the location of any obsticles.
-The python program is to implement well established path planning algorithms and to implement huristics for determining which robot should go first in the even that 2 paths collide. This will be a study tool for demonstrating the effectiveness of these huristics. The objective will be to minimize the make-span or time-span of the traveling robots.
+##Licensing Information: READ LICENSE
 
-The second part of the project is to demonstrate the environment and robot set-up in Gazebo to show how the robots move from one configuration to the final configuration.
+##Project Source Location
+https://github.com/joseleel
+
+##Author & Contributor List
+Michiel Ashley III miashley150@tamu dot edu
+Manjeel Regmi
+Jose Leal
+Mohamad (Mo) Khachfe
+Ahmad Tashkandi
+Rawad Minkara
+Henry Campbell
+
+The first part of the project is a python simulaiton that creats a grid world with robot start-points, end-points and obstacle points. Any world size, number of robots or obstacles can be defind. The simulation will plan each robot's path with the A* search algorithm only accounting for the world size and obstacle locations. Then collisions are detected by checking if two paths want to occupy the same point at the same time. Currently, the ntersection huristic is to make the robot(s) that has the lower priority in the projected collision to wait at its start point until the collison will not happen.
+
+![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/show_collision_FINAL_NO.gif?raw=true)
+
+![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/show_collision_FINAL_YES.gif?raw=true)
+
+The second part of the project is to demonstrate the environment and robot set-up in Gazebo to show how the robots move from one configuration to the final configuration. 
