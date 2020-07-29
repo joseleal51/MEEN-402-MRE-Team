@@ -16,7 +16,7 @@ https://github.com/joseleal51/MEEN-402-MRE-Team
 |Manjeel Regmi|(-)|
 |Jose Leal|(-)|
 |Mohamad (Mo) Khachfe|mohamadkhachfe@gmail dot edu|
-|Ahmad Tashkandi|(-)|
+|Ahmad Tashkandi| ahmad.tashkandi.1@kaust dot edu dot sa|
 |Rawad Minkara|(-)|
 |Henry Campbell|(-)|
 
