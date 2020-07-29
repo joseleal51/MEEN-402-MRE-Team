@@ -24,9 +24,9 @@ https://github.com/joseleal51/MEEN-402-MRE-Team
 
 The first part of the project is a python simulaiton that creats a grid world with robot start-points, end-points and obstacle points. Any world size, number of robots or obstacles can be defind. The simulation will plan each robot's path with the A* search algorithm only accounting for the world size and obstacle locations. Then collisions are detected by checking if two paths want to occupy the same point at the same time. Currently, the ntersection huristic is to make the robot(s) that has the lower priority in the projected collision to wait at its start point until the collison will not happen.
 
-![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/show_collision_FINAL_NO.gif?raw=true)
+![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/simulation_outputs/show_collision_FINAL_NO.gif?raw=true)
 
-![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/show_collision_FINAL_YES.gif?raw=true)
+![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/simulation_outputs/show_collision_FINAL_YES.gif?raw=true)
 
 The second part of the project is to demonstrate the environment and robot set-up in Gazebo to show how the robots move from one configuration to the final configuration.  
 More info to be added...
