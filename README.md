@@ -21,9 +21,9 @@ https://github.com/joseleal51/MEEN-402-MRE-Team
 |Henry Campbell|(-)|
 
 ## Project Description
-As part of a senior design capstone project, the design team had to create a Multi-Robot Envirionment for Testing Multi-Agent Path Planning algorithms. The project was a two semester endevor, however the COVID-19 pandemic caused the project to adapt to simulation mid-way through the first semester. Before the pandemic, the design team worked with physical robots and a motion tracking system in the Advanced Robotics and Manufactuing Lab ![Mechanical Engineering - Labs](https://engineering.tamu.edu/mechanical/research/laboratories-and-groups.html). After the pandemic, the design team created python and Gazebo simulaitons.
+As part of a senior design capstone project, the design team had to create a Multi-Robot Envirionment for Testing Multi-Agent Path Planning algorithms. The project was a two semester endevor, however the COVID-19 pandemic caused the project to adapt to simulation mid-way through the first semester. Before the pandemic, the design team worked with physical robots and a motion tracking system in the Advanced Robotics and Manufactuing Lab. See the ![Mechanical Engineering Research Labs](https://engineering.tamu.edu/mechanical/research/laboratories-and-groups.html). After the pandemic, the design team created python and Gazebo simulaitons.
 
-### Turtlebot 2
+### Turtlebot 2 
 When working in the lab, ROS was used to control the robots. Each robot had an on-board computer and power-supply which communicated via WiFi to a central computer. Additionally, the design team began to set up a motion tracking system by Motive, called Opti-Track.  
 Videos and pictures to be added...
  
