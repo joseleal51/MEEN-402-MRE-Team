@@ -3,7 +3,7 @@
 
 ## Licensing Information: READ LICENSE
 
-<to be updated>
+to be updated...
 
 ## Project Source Location
 https://github.com/joseleal51/MEEN-402-MRE-Team
