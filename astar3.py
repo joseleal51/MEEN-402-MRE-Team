@@ -302,7 +302,7 @@ def main_calculation(
 
     ani = animation.FuncAnimation(fig, animate, interval=600, frames=sim.time+5, repeat=True)
     plt.show()
-    #ani.save('simulation_outputs/test.gif', writer='pillow')
+    ani.save('simulation_outputs/no_collisions.gif', writer='pillow')
 
 
 if __name__ == "__main__":
