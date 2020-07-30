@@ -34,6 +34,12 @@ The first part of the project is a python simulaiton that creats a grid world wi
 
 ![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/simulation_outputs/show_collision_FINAL_YES.gif?raw=true)
 
+![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/simulation_outputs/simulation_flowchart-1-1.jpg?raw=true)
+
+![alt text](https://github.com/joseleal51/MEEN-402-MRE-Team/blob/master/simulation_outputs/collision_avoid_algo.png?raw=true)
+
+
+
 ### Gazebo Simulation
 The second part of the project is to demonstrate the environment and robot set-up in Gazebo to show how the robots move from one configuration to the final configuration.  
 More info to be added...
