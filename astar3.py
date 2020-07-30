@@ -180,7 +180,7 @@ class ScheduleRobots:
                                 colliding_robots.append(robo1)
                                 colliding_robots.append(robo2)
                                 return t, colliding_robots
-                    except:
+                    except: # index error
                         try:
                             if self.routes[robo1][t] == self.routes[robo2][t+1]:
                                 if self.routes[robo2][t] == self.routes[robo1][t+1]:
@@ -194,13 +194,17 @@ class ScheduleRobots:
         return t, [] # no robots colliding
 
     def wait_heuristic(self, colliding_robots):
-        """This method will attempt to avoid collisions by making the lower priority robot wait"""
+        """This method will attempt to avoid collisions by making the lower priority robot wait at its start point"""
         if len(colliding_robots) == 0: return
         else:
             if self.priorities[colliding_robots[0]] > self.priorities[colliding_robots[1]]:
                 self.routes[colliding_robots[1]].insert(0,self.routes[colliding_robots[1]][0])
             else: 
                 self.routes[colliding_robots[0]].insert(0,self.routes[colliding_robots[0]][0])
+    
+    def side_step_heuristic(self, colliding_robots):
+        '''Another method for avoiding collisions... To be added'''
+        pass
 
     def create_simulation_data(self):
         data = [[(0,0)]*self.num_robots for t in range(self.time)]
@@ -209,8 +213,7 @@ class ScheduleRobots:
                 try:
                     data[t][robo] = self.routes[robo][t]
                 except: # the route for a robot is shorter than the other ones
-                    # make the robot stay at its end point
-                    #print("exception handled")
+                    # make the robot stay at its end point (which is its previous point)
                     data[t][robo] = data[t-1][robo]
         return data
 
@@ -306,23 +309,26 @@ def main_calculation(
 
 
 if __name__ == "__main__":
-    # line1 = [(i,40) for i in range(30,19, -1)]
-    # line2 = [(20,i) for i in range(40,61)]
-    # line3 = [(i,60) for i in range(20,51)]
-    # line4 = [(50,i) for i in range(60,19, -1)]; print(line4[-1])
-    # line5 = [(i,20) for i in range(50,19,-1)]
-    # line6 = [(i,90) for i in range(70,81)]
-    # barrier_points=[line1+line2+line3+line4+line5, line6]
-    # world_size = (100, 100)
-    # robots_starts = [(0,0), (80, 100), (30,50), (90,90), (70,70)]
-    # robots_ends = [(10,90), (10,10), (70,20), (40,30), (20,20)]
-    barrier_points=[[(3,4),(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
-                     (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)],
-                     [(7,9),(8,9)]]
-    world_size = (10, 10)
-    robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)]
-    robots_ends = [(1,9), (1,1), (7,2), (4,3), (2,1)]    
-    
+    line1 = [(i,40) for i in range(30,19, -1)]
+    line2 = [(20,i) for i in range(40,61)]
+    line3 = [(i,60) for i in range(20,51)]
+    line4 = [(50,i) for i in range(60,19, -1)]; print(line4[-1])
+    line5 = [(i,20) for i in range(50,19,-1)]
+    line6 = [(i,90) for i in range(70,81)]
+    barrier_points=[line1+line2+line3+line4+line5, line6]
+    world_size = (100, 100)
+    robots_starts = [(0,0), (80, 100), (30,50), (90,90), (70,70)]
+    robots_ends = [(10,90), (10,10), (70,20), (40,30), (20,20)]
+    # barrier_points=[[(3,4),(2, 4), (2, 5), (2, 6), (3, 6), (4, 6),
+    #                  (5, 6), (5, 5), (5, 4), (5, 3), (5, 2), (4, 2), (3, 2)],
+    #                  [(7,9),(8,9)]]
+    # world_size = (10, 10)
+    # robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)]
+    # robots_ends = [(1,9), (1,1), (7,2), (4,3), (2,1)]    
+
+    # robots_starts = [(0,1), (8, 10),(0,0), (3,5), (9,9), (7,7)]
+    # robots_ends = [(4,9), (10,0), (5,8), (7,2), (4,3), (2,1)]
+
     main_calculation(barrier_points,
                     world_size,
                     robots_starts,
