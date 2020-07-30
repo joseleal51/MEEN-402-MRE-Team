@@ -124,17 +124,31 @@ class ScheduleRobots:
     will occupy in time"""
     def __init__(self, routes):
         self.routes = routes
-        self.longest_route_len = max([len(x) for x in routes])
-        self.time = self.longest_route_len
+        self.time = max([len(x) for x in routes])
         self.num_robots = len(routes)
-        self.collisions_robots = {}
         self.collisions_points = {}
         self.priorities = list(np.array([len(j) for j in routes]).argsort().argsort())
         self.bool_collision = True  # by default there a collision is detected unless proven otherwise
 
+    def within_one_node(self, points_list):
+        points = points_list.copy()
+        self.close_robots = []
+        flag = False
+        for robo in range(len(points)):
+            try: p = points.pop(0)
+            except: print('*Failed* ', points)
+            for i, pnt in enumerate(points):
+                if pnt[0]+1==p[0] or pnt[0]-1==p[0] or pnt[0]==p[0]: # 1st check if x point is within a distance of 1
+                    if pnt[1]+1==p[1] or pnt[1]-1==p[1] or pnt[1]==p[1]: # 2nd check if y point is within dist = 1
+                        # then the 2 points are next to each other
+                        self.close_robots.append((robo,i+robo+1)) # add the first & 2nd robo's index
+                        flag = True
+        return flag
+            
     def find_collisions(self):
         """This method will identify when, where and which robots collide"""
-        self.collisions_points = {} # 
+        self.collisions_points = {} #
+        colliding_robots = []
         for t in range(self.time):
             pnts_in_time = []
             for robo in range(self.num_robots):
@@ -146,7 +160,6 @@ class ScheduleRobots:
             # 1st check if two robots want to occupy the same point at the same time
             if max(count_of_pnts) > 1:
                 # then there is a collision becasue two paths want to occupy the same point in time
-                colliding_robots = []
                 for i, count in enumerate(count_of_pnts):
                     if count > 1:
                         colliding_robots.append(i)
@@ -156,9 +169,27 @@ class ScheduleRobots:
                 return t, colliding_robots
             
             # 2nd check if two robots want swap points (to cross each other)
-            else: # to be added.. will have to use a t-1 or t+1 to see if points "switch"
-                continue
-        
+            elif self.within_one_node(pnts_in_time): # to be added.. will have to use a t-1 or t+1 to see if points "switch"
+                #print('t=',t, self.close_robots, 'close robots')
+                # check robots switch pathes
+                for robo1, robo2 in self.close_robots:
+                    try:
+                        if self.routes[robo1][t+1] == self.routes[robo2][t]:
+                            if self.routes[robo2][t+1] == self.routes[robo1][t]:
+                                print("1ROBOT: ", robo1+1, ' & ', robo2+1, ' crossed between t=', t, '& ', t+1)
+                                colliding_robots.append(robo1)
+                                colliding_robots.append(robo2)
+                                return t, colliding_robots
+                    except:
+                        try:
+                            if self.routes[robo1][t] == self.routes[robo2][t+1]:
+                                if self.routes[robo2][t] == self.routes[robo1][t+1]:
+                                    print("2ROBOT: ", robo1+1, ' & ', robo2+1, ' crossed between t=', t, '& ', t+1)
+                                    colliding_robots.append(robo1)
+                                    colliding_robots.append(robo2)
+                                    return t, colliding_robots
+                        except: pass
+
         self.bool_collision = False
         return t, [] # no robots colliding
 
@@ -217,12 +248,10 @@ def main_calculation(
     else: sim.find_collisions()
 
     data = sim.create_simulation_data()
-    #for d in data2: print(d)
 
     # animation
     fig = plt.figure(num='MRE Simulaion', figsize=(10,6)) 
     ax1 = fig.add_subplot(1,1,1)
-    #data = sim.routes_time
     collisions = sim.collisions_points
     colors = {0:'k', 1:'r', 2:'g', 3:'b', 4:'c', 5:'y', 6:'g'}
  
@@ -256,7 +285,6 @@ def main_calculation(
         ax1.set_title('Mult-Agent Path Planning - Simulation\nCollisions Avoided: '+str(avoid_collisions))
         ax1.grid(1)
 
-
         try: 
             ax1.scatter(collisions[i][0], collisions[i][1], 300, facecolors='none', edgecolors='r')
             if avoid_collisions: coll_string = 'COLLISION AVOIDED'
@@ -274,17 +302,15 @@ def main_calculation(
 
     ani = animation.FuncAnimation(fig, animate, interval=600, frames=sim.time+5, repeat=True)
     plt.show()
-    ani.save('simulation_outputs/show_collision1.gif', writer='pillow')
-
-# animate graph - make time := distance (need to define a min distance/time that robots can get to eachother (collison avoidance))
+    #ani.save('simulation_outputs/test.gif', writer='pillow')
 
 
 if __name__ == "__main__":
-    # line1 = [(i,40) for i in range(20,31)]
+    # line1 = [(i,40) for i in range(30,19, -1)]
     # line2 = [(20,i) for i in range(40,61)]
     # line3 = [(i,60) for i in range(20,51)]
     # line4 = [(50,i) for i in range(60,19, -1)]; print(line4[-1])
-    # line5 = [(30,i) for i in range(20,51)]
+    # line5 = [(i,20) for i in range(50,19,-1)]
     # line6 = [(i,90) for i in range(70,81)]
     # barrier_points=[line1+line2+line3+line4+line5, line6]
     # world_size = (100, 100)
@@ -295,10 +321,9 @@ if __name__ == "__main__":
                      [(7,9),(8,9)]]
     world_size = (10, 10)
     robots_starts = [(0,0), (8, 10), (3,5), (9,9), (7,7)]
-    robots_ends = [(1,9), (1,1), (7,2), (4,3), (2,2)]    
+    robots_ends = [(1,9), (1,1), (7,2), (4,3), (2,1)]    
     
     main_calculation(barrier_points,
                     world_size,
                     robots_starts,
                     robots_ends)
-
