@@ -13,7 +13,7 @@ https://github.com/joseleal51/MEEN-402-MRE-Team
 |Author|Contact|
 |------|-------|
 |Michiel Ashley III|miashley150@tamu dot edu|
-|Manjeel Regmi|(-)|
+|Manjeel Regmi|(manjeelregmi@tamu dot edu)|
 |Jose Leal|(-)|
 |Mohamad (Mo) Khachfe|mohamadkhachfe@gmail dot edu|
 |Ahmad Tashkandi| ahmad.tashkandi.1@kaust dot edu dot sa|
