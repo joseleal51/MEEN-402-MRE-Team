@@ -49,7 +49,7 @@ After the collision avoidance algorithm is implemented:
 ### Gazebo Simulation
 The second part of the project is to demonstrate the environment and robot set-up in Gazebo to show how the robots move from one configuration to the final configuration.
 
-# The Environment 
+## The Environment 
 
 The environment, shown in the image below, was designed on the basis of allowing for different path planning algorithms to take place. 
 
@@ -61,7 +61,7 @@ roslaunch turtlebot_gazebo turtlebot_world.launch world_file:=/path to world fil
 
 This input would load the saved environment after installing the turtlebot_gazebo packages necessary for your ROS distribution – the team used ROS Kinetic.  It is recommended to make your own package to be able to easily share your world and launch file at your own settings, however it’s not entirely necessary. 
 
-# The Path Planning 
+## The Path Planning 
 
 ROS has built in path planning. This path planning is responsible for autonomous driving. The path planning is housed in a ROS program called RVIZ. In order to access RVIZ, an environment was needed. There was a laser attached to the robot. RVIZ allowed the TurtleBot to utilize its laser to create a 2D representation of the environment that the TurtleBot was in. The robot could only move in the x-y plane, therefore, the map served as the facilitator in autonomous driving. The following figure is a map of the environment for this project. 
 
